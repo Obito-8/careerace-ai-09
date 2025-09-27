@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AI Mentor & Placement Hub Design System */
+
+@layer base {
+  :root {
+    /* Core Colors - Modern Educational Theme */
+    --background: 248 250 252; /* slate-50 */
+    --foreground: 226 232 240; /* slate-700 */
+
+    --card: 255 255 255; /* white */
+    --card-foreground: 51 65 85; /* slate-700 */
+
+    --popover: 255 255 255;
+    --popover-foreground: 51 65 85;
+
+    /* Primary - Deep Blue for Trust & Professionalism */
+    --primary: 219 78% 15%; /* Deep blue */
+    --primary-foreground: 248 250 252;
+    --primary-light: 219 78% 25%;
+    --primary-glow: 219 78% 35%;
+
+    /* Secondary - Purple for Innovation */
+    --secondary: 262 83% 58%; /* Purple */
+    --secondary-foreground: 255 255 255;
+    --secondary-light: 262 83% 68%;
+
+    /* Success - Green for Progress & Achievement */
+    --success: 142 76% 36%; /* Emerald green */
+    --success-foreground: 255 255 255;
+    --success-light: 142 76% 46%;
+    --success-glow: 142 76% 56%;
+
+    /* Warning - Orange for Attention */
+    --warning: 38 92% 50%;
+    --warning-foreground: 255 255 255;
+
+    /* Muted - Subtle Backgrounds */
+    --muted: 248 250 252; /* slate-50 */
+    --muted-foreground: 100 116 139; /* slate-500 */
+
+    --accent: 244 244 245; /* neutral-100 */
+    --accent-foreground: 39 39 42; /* neutral-700 */
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 255 255 255;
+
+    --border: 226 232 240; /* slate-200 */
+    --input: 226 232 240;
+    --ring: 219 78% 15%;
+
+    --radius: 0.75rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-light)));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+
+    /* Shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.1);
+    --shadow-success: 0 10px 30px -10px hsl(var(--success) / 0.2);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+
+  .dark {
+    --background: 15 23 42; /* slate-800 */
+    --foreground: 226 232 240;
+    --card: 30 41 59; /* slate-700 */
+    --card-foreground: 226 232 240;
+    --popover: 30 41 59;
+    --popover-foreground: 226 232 240;
+    --primary: 219 78% 25%;
+    --primary-foreground: 248 250 252;
+    --secondary: 262 83% 68%;
+    --secondary-foreground: 255 255 255;
+    --success: 142 76% 46%;
+    --success-foreground: 255 255 255;
+    --muted: 30 41 59;
+    --muted-foreground: 148 163 184;
+    --accent: 51 65 85;
+    --accent-foreground: 226 232 240;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 255 255 255;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 219 78% 25%;
+  }
+
+  /* Custom Keyframes */
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
+    50% { box-shadow: 0 0 40px hsl(var(--primary) / 0.6); }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
