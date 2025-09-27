@@ -17,6 +17,7 @@ import {
   Zap,
   Award,
   Activity,
+  Play,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -125,51 +126,56 @@ const Dashboard = () => {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Today's Tasks */}
+        {/* Basic Problems */}
         <Card className="lg:col-span-2 shadow-elegant">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-success" />
-              Today's Tasks
+              <Code2 className="h-5 w-5 text-primary" />
+              Basic Problems
             </CardTitle>
-            <CardDescription>Complete these to stay on track</CardDescription>
+            <CardDescription>Essential coding problems to build your foundation</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {todaysTasks.map((task) => (
-              <div
-                key={task.id}
-                className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
-                  task.completed
-                    ? "bg-success/5 border-success/20"
-                    : "bg-muted/30 hover:bg-muted/50"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`h-2 w-2 rounded-full ${
-                      task.completed ? "bg-success" : "bg-muted-foreground"
-                    }`}
-                  />
-                  <div>
-                    <p className={`font-medium ${task.completed ? "line-through text-muted-foreground" : ""}`}>
-                      {task.title}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {task.time}
-                    <Badge variant="outline" className="text-xs">
-                        {task.type}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-                {!task.completed && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="p-4 rounded-lg border bg-success/5 border-success/20">
+                <h4 className="font-medium text-success mb-2">Arrays & Strings</h4>
+                <p className="text-sm text-muted-foreground mb-3">Master fundamental operations</p>
+                <Progress value={72} className="h-2 mb-2" />
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">18/25 completed</span>
                   <Button size="sm" variant="outline">
-                    Start
+                    <Code2 className="mr-1 h-3 w-3" />
+                    Practice
                   </Button>
-                )}
+                </div>
               </div>
-            ))}
+              
+              <div className="p-4 rounded-lg border bg-primary/5 border-primary/20">
+                <h4 className="font-medium text-primary mb-2">Linked Lists</h4>
+                <p className="text-sm text-muted-foreground mb-3">Pointer manipulation basics</p>
+                <Progress value={53} className="h-2 mb-2" />
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">8/15 completed</span>
+                  <Button size="sm" variant="outline">
+                    <Code2 className="mr-1 h-3 w-3" />
+                    Practice
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 rounded-lg border bg-muted/30">
+              <h4 className="font-medium mb-2">Today's Recommended Problem</h4>
+              <p className="text-sm text-muted-foreground mb-3">Two Sum - Array manipulation</p>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-success bg-success/10">Easy</Badge>
+                <span className="text-xs text-muted-foreground">~15 min</span>
+                <Button size="sm" className="ml-auto">
+                  <Play className="mr-1 h-3 w-3" />
+                  Solve Now
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
 

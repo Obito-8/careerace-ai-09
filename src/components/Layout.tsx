@@ -15,7 +15,6 @@ import {
   Code2,
   FileText,
   BarChart3,
-  MessageSquare,
   User,
   Settings,
   LogOut,
@@ -23,6 +22,7 @@ import {
   X,
   Trophy,
   Target,
+  Home,
 } from "lucide-react";
 
 const Layout = () => {
@@ -31,14 +31,8 @@ const Layout = () => {
 
   const navigationItems = [
     {
-      name: "Dashboard",
-      href: "/",
-      icon: BarChart3,
-      description: "Overview & Progress"
-    },
-    {
       name: "AI Mentor",
-      href: "/mentor",
+      href: "/",
       icon: Brain,
       description: "Personalized Guidance"
     },
@@ -55,10 +49,10 @@ const Layout = () => {
       description: "Builder & Review"
     },
     {
-      name: "Mock Interviews",
-      href: "/interviews",
-      icon: MessageSquare,
-      description: "HR & Technical"
+      name: "Dashboard",
+      href: "/dashboard",
+      icon: Home,
+      description: "Overview & Progress"
     },
   ];
 
