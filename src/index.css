@@ -6,21 +6,21 @@
 
 @layer base {
   :root {
-    /* Core Colors - Modern Educational Theme */
-    --background: 248 250 252; /* slate-50 */
-    --foreground: 226 232 240; /* slate-700 */
+    /* Core Colors - Dark Theme with Black & White */
+    --background: 0 0% 0%; /* black */
+    --foreground: 0 0% 100%; /* white */
 
-    --card: 255 255 255; /* white */
-    --card-foreground: 51 65 85; /* slate-700 */
+    --card: 0 0% 5%; /* very dark gray */
+    --card-foreground: 0 0% 100%; /* white */
 
-    --popover: 255 255 255;
-    --popover-foreground: 51 65 85;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
 
-    /* Primary - Deep Blue for Trust & Professionalism */
-    --primary: 219 78% 15%; /* Deep blue */
-    --primary-foreground: 248 250 252;
-    --primary-light: 219 78% 25%;
-    --primary-glow: 219 78% 35%;
+    /* Primary - Black */
+    --primary: 0 0% 10%; /* Dark black */
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 0 0% 20%;
+    --primary-glow: 0 0% 30%;
 
     /* Secondary - Purple for Innovation */
     --secondary: 262 83% 58%; /* Purple */
@@ -33,31 +33,31 @@
     --success-light: 142 76% 46%;
     --success-glow: 142 76% 56%;
 
-    /* Warning - Orange for Attention */
-    --warning: 38 92% 50%;
-    --warning-foreground: 255 255 255;
+    /* Warning - Black instead of yellow/orange */
+    --warning: 0 0% 15%;
+    --warning-foreground: 0 0% 100%;
 
-    /* Muted - Subtle Backgrounds */
-    --muted: 248 250 252; /* slate-50 */
-    --muted-foreground: 100 116 139; /* slate-500 */
+    /* Muted - Dark Backgrounds */
+    --muted: 0 0% 10%; /* dark gray */
+    --muted-foreground: 0 0% 70%; /* light gray */
 
-    --accent: 244 244 245; /* neutral-100 */
-    --accent-foreground: 39 39 42; /* neutral-700 */
+    --accent: 0 0% 15%; /* dark gray */
+    --accent-foreground: 0 0% 100%; /* white */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 255 255 255;
 
-    --border: 226 232 240; /* slate-200 */
-    --input: 226 232 240;
-    --ring: 219 78% 15%;
+    --border: 0 0% 20%; /* dark gray border */
+    --input: 0 0% 15%;
+    --ring: 0 0% 30%;
 
     --radius: 0.75rem;
 
-    /* Gradients */
+    /* Gradients - Dark theme */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
     --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-light)));
     --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-light)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 10%) 0%, hsl(0 0% 20%) 100%);
     --gradient-card: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
 
     /* Shadows */

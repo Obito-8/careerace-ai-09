@@ -108,11 +108,6 @@ const Layout = () => {
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
-            {/* Stats Badge */}
-            <div className="hidden sm:flex items-center space-x-2 rounded-full bg-success/10 px-3 py-1">
-              <Trophy className="h-4 w-4 text-success" />
-              <span className="text-sm font-medium text-success">Level 5</span>
-            </div>
 
             {/* User Dropdown */}
             <DropdownMenu>
