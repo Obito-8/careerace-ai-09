@@ -48,12 +48,6 @@ const Layout = () => {
       icon: FileText,
       description: "Builder & Review"
     },
-    {
-      name: "Dashboard",
-      href: "/dashboard",
-      icon: Home,
-      description: "Overview & Progress"
-    },
   ];
 
   const isActive = (path: string) => {
@@ -66,17 +60,35 @@ const Layout = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-primary">
-              <Brain className="h-6 w-6 text-primary-foreground" />
+          {/* Logo and Dashboard */}
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-primary">
+                <Brain className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                  PlacementHub
+                </h1>
+                <p className="text-xs text-muted-foreground">AI Mentor Platform</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                PlacementHub
-              </h1>
-              <p className="text-xs text-muted-foreground">AI Mentor Platform</p>
-            </div>
+            
+            {/* Dashboard Link */}
+            <NavLink
+              to="/dashboard"
+              className={`group relative flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                isActive('/dashboard')
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              }`}
+            >
+              <Home className="h-4 w-4" />
+              <span>Dashboard</span>
+              {isActive('/dashboard') && (
+                <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-primary" />
+              )}
+            </NavLink>
           </div>
 
           {/* Desktop Navigation */}
@@ -162,6 +174,25 @@ const Layout = () => {
           <div className="border-t border-border/40 bg-background/95 backdrop-blur md:hidden">
             <nav className="container py-4">
               <div className="grid gap-2">
+                {/* Dashboard Link for Mobile */}
+                <NavLink
+                  to="/dashboard"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
+                    isActive('/dashboard')
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  }`}
+                >
+                  <Home className="h-5 w-5" />
+                  <div>
+                    <div>Dashboard</div>
+                    <div className="text-xs text-muted-foreground">
+                      Overview & Progress
+                    </div>
+                  </div>
+                </NavLink>
+                
                 {navigationItems.map((item) => (
                   <NavLink
                     key={item.name}
