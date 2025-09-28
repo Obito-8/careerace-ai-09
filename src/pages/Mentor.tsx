@@ -1,9 +1,14 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Brain,
   Send,
@@ -26,33 +31,99 @@ interface Message {
   type?: "suggestion" | "plan" | "feedback";
 }
 
+interface UserProfile {
+  dsa_progress: number;
+  resume_built: boolean;
+  ai_usage_count: number;
+  full_name: string;
+}
+
 const Mentor = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      content: "Hi John! I'm your AI mentor. I've analyzed your progress and I'm here to help you reach your placement goals. What would you like to work on today?",
-      sender: "ai",
-      timestamp: new Date(),
-      type: "suggestion"
-    }
-  ]);
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const quickSuggestions = [
-    { icon: Code2, text: "Help me plan DSA practice", category: "coding" },
-    { icon: Target, text: "Create study roadmap for FAANG", category: "strategy" },
-    { icon: BookOpen, text: "Review my weak areas", category: "assessment" },
-    { icon: TrendingUp, text: "Track my progress", category: "analytics" },
-  ];
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/auth");
+    }
+  }, [user, authLoading, navigate]);
 
-  const aiResponses = [
-    "Based on your current progress, I recommend focusing on dynamic programming problems. You've mastered basic algorithms, so let's tackle more complex patterns like knapsack and subsequence problems.",
-    "Great question! For FAANG preparation, I suggest this 12-week plan: Weeks 1-4 focus on data structures, weeks 5-8 on algorithms, weeks 9-10 on system design basics, and weeks 11-12 on mock interviews.",
-    "I've noticed you're struggling with graph algorithms. Let's start with BFS and DFS fundamentals, then move to shortest path algorithms like Dijkstra's. I'll create a personalized practice plan.",
-    "Your coding skills have improved 15% this month! Your problem-solving speed is excellent, but let's work on optimizing space complexity. I'll suggest some specific problems to practice."
-  ];
+  // Fetch user profile and chat history
+  useEffect(() => {
+    if (user) {
+      fetchUserProfile();
+      fetchChatHistory();
+    }
+  }, [user]);
+
+  const fetchUserProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user?.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      setUserProfile(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  const fetchChatHistory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: true })
+        .limit(20);
+      
+      if (error) throw error;
+      
+      const chatMessages: Message[] = data.map(msg => [
+        {
+          id: `${msg.id}-user`,
+          content: msg.message,
+          sender: "user" as const,
+          timestamp: new Date(msg.created_at),
+        },
+        ...(msg.response ? [{
+          id: `${msg.id}-ai`,
+          content: msg.response,
+          sender: "ai" as const,
+          timestamp: new Date(msg.created_at),
+        }] : [])
+      ]).flat();
+      
+      if (chatMessages.length === 0) {
+        setMessages([{
+          id: "welcome",
+          content: `Hello ${userProfile?.full_name || user?.user_metadata?.full_name || 'there'}! I'm your AI Mentor. I'm here to help you with your placement preparation journey. How can I assist you today?`,
+          sender: "ai",
+          timestamp: new Date(),
+        }]);
+      } else {
+        setMessages(chatMessages);
+      }
+    } catch (error) {
+      console.error('Error fetching chat history:', error);
+      setMessages([{
+        id: "welcome",
+        content: `Hello! I'm your AI Mentor. I'm here to help you with your placement preparation journey. How can I assist you today?`,
+        sender: "ai",
+        timestamp: new Date(),
+      }]);
+    }
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -61,32 +132,132 @@ const Mentor = () => {
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || isLoading || !user) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: inputMessage,
+      content: inputMessage.trim(),
       sender: "user",
       timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageText = inputMessage.trim();
     setInputMessage("");
     setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: aiResponses[Math.floor(Math.random() * aiResponses.length)],
-        sender: "ai",
-        timestamp: new Date(),
-        type: "feedback"
-      };
-      setMessages(prev => [...prev, aiMessage]);
+    try {
+      // Call the chat function
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: [
+            ...messages.map(msg => ({
+              role: msg.sender === 'user' ? 'user' : 'assistant',
+              content: msg.content
+            })),
+            { role: 'user', content: messageText }
+          ],
+          userProgress: userProfile
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to get AI response');
+
+      // Stream the response
+      let aiResponse = '';
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No response body');
+      
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.trim() === '' || line.startsWith(':')) continue;
+          if (!line.startsWith('data: ')) continue;
+          
+          const data = line.slice(6);
+          if (data === '[DONE]') continue;
+          
+          try {
+            const parsed = JSON.parse(data);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              aiResponse += content;
+              setMessages(prev => {
+                const lastMessage = prev[prev.length - 1];
+                if (lastMessage?.sender === 'ai' && lastMessage.id.startsWith('streaming-')) {
+                  return prev.map(msg => 
+                    msg.id === lastMessage.id 
+                      ? { ...msg, content: aiResponse }
+                      : msg
+                  );
+                }
+                return [...prev, {
+                  id: 'streaming-' + Date.now(),
+                  content: aiResponse,
+                  sender: 'ai' as const,
+                  timestamp: new Date(),
+                }];
+              });
+            }
+          } catch (e) {
+            console.log('Failed to parse JSON:', data);
+          }
+        }
+      }
+
+      // Save the complete conversation to database
+      await supabase.from('chat_messages').insert({
+        user_id: user.id,
+        message: messageText,
+        response: aiResponse,
+      });
+
+      // Update AI usage count
+      if (userProfile) {
+        await supabase
+          .from('profiles')
+          .update({ ai_usage_count: (userProfile.ai_usage_count || 0) + 1 })
+          .eq('user_id', user.id);
+        
+        setUserProfile(prev => prev ? { ...prev, ai_usage_count: (prev.ai_usage_count || 0) + 1 } : null);
+      }
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get AI response. Please try again.",
+        variant: "destructive",
+      });
+      
+      // Remove the user message on error
+      setMessages(prev => prev.slice(0, -1));
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
+
+  const quickSuggestions = [
+    { icon: Code2, text: "Help me plan DSA practice", category: "coding" },
+    { icon: Target, text: "Create study roadmap for FAANG", category: "strategy" },
+    { icon: BookOpen, text: "Review my weak areas", category: "assessment" },
+    { icon: TrendingUp, text: "Track my progress", category: "analytics" },
+  ];
 
   const handleQuickSuggestion = (suggestion: string) => {
     setInputMessage(suggestion);
@@ -95,6 +266,20 @@ const Mentor = () => {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
+
+  // Show loading if auth is still loading
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Don't render if user is not authenticated
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-4 animate-fade-in">
@@ -254,18 +439,28 @@ const Mentor = () => {
               Progress Insights
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Problems Solved</span>
-              <span className="font-medium text-success">+3 today</span>
+          <CardContent className="space-y-4">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">DSA Progress</span>
+                <span className="font-medium">{userProfile?.dsa_progress || 0}%</span>
+              </div>
+              <Progress value={userProfile?.dsa_progress || 0} className="h-2" />
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Study Time</span>
-              <span className="font-medium text-primary">2.5 hours</span>
+            
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Resume Status</span>
+              <span className={`font-medium ${userProfile?.resume_built ? 'text-success' : 'text-warning'}`}>
+                {userProfile?.resume_built ? 'Built' : 'Pending'}
+              </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Weak Areas</span>
-              <span className="font-medium text-warning">Graphs</span>
+            
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">AI Usage</span>
+                <span className="font-medium">{userProfile?.ai_usage_count || 0} queries</span>
+              </div>
+              <div className="text-xs text-muted-foreground">Total</div>
             </div>
           </CardContent>
         </Card>

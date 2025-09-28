@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Brain,
   Code2,
@@ -28,6 +29,7 @@ import {
 const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const navigationItems = [
     {
@@ -122,7 +124,7 @@ const Layout = () => {
                   <Avatar className="h-10 w-10">
                     <AvatarImage src="" />
                     <AvatarFallback className="bg-gradient-primary text-primary-foreground">
-                      JD
+                      {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -130,9 +132,11 @@ const Layout = () => {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">John Doe</p>
+                    <p className="text-sm font-medium leading-none">
+                      {user?.user_metadata?.full_name || "User"}
+                    </p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      john@example.com
+                      {user?.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>
@@ -146,7 +150,7 @@ const Layout = () => {
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
