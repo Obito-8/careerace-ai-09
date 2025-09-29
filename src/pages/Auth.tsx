@@ -92,7 +92,7 @@ const Auth = () => {
             </div>
           </div>
           <CardTitle className="text-xl">
-            {isLogin ? "Welcome Back" : "Create Account"}
+            {isLogin ? "Hii buddy!" : "Create Account"}
           </CardTitle>
         </CardHeader>
         <CardContent>
